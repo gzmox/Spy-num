@@ -2,54 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phone Number Lookup</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-    .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    input, button { width: 100%; padding: 10px; margin-top: 10px; }
-    .result { margin-top: 20px; font-size: 1rem; background: #eef; padding: 10px; border-radius: 5px; }
+    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    textarea, input, button { width: 100%; margin: 10px 0; padding: 10px; }
+    .result { background: #eef; padding: 10px; border-radius: 5px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Phone Number Lookup</h2>
-    <input type="text" id="phoneInput" placeholder="Enter phone number">
-    <button onclick="lookupNumber()">Search</button>
-    <div id="result" class="result" style="display:none;"></div>
-  </div>
-
-  <script>
-    function lookupNumber() {
-      const number = document.getElementById('phoneInput').value.trim();
-      const resultDiv = document.getElementById('result');
-      
-      if (!number) {
-        resultDiv.innerHTML = 'Please enter a number.';
-        resultDiv.style.display = 'block';
-        return;
-      }
-
-      // Simulated local database (replace with real backend later)
-      const mockDatabase = {
-        '1234567890': { name: 'John Doe', location: 'Oslo, Norway', type: 'Mobile' },
-        '9876543210': { name: 'Jane Smith', location: 'Bergen, Norway', type: 'Landline' }
-      };
-
-      const info = mockDatabase[number];
-
-      if (info) {
-        resultDiv.innerHTML = `
-          <strong>Owner:</strong> ${info.name}<br>
-          <strong>Location:</strong> ${info.location}<br>
-          <strong>Type:</strong> ${info.type}
-        `;
-      } else {
-        resultDiv.innerHTML = 'Number not found in local database.';
-      }
-
-      resultDiv.style.display = 'block';
-    }
-  </script>
+  <h2>Phone Number Lookup</h2>
+  
+  <input id="urlInput" type="text" placeholder="Enter webpage URL to scrape">
+  <button onclick="fetchAndExtract()">Fetch & Extract</button>
+  
+  <textarea id="rawInput" rows="5" placeholder="Or paste raw HTML/text"></textarea>
+  <button onclick="extractFromRaw()">Extract from Raw Text</button>
+  
+  <div id="result" class="result" style="display:none;"></div>
+  
+  <script src="app.js"></script>
 </body>
 </html>
