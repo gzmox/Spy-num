@@ -1,4 +1,4 @@
-const proxy = 'https://api.allorigins.win/raw?url=';
+const proxy = 'https://thingproxy.freeboard.io/fetch/';
 
 async function scrape(url, parser) {
   try {
