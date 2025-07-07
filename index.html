@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>📱 Number Lookup</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>📱 Combined Phone Lookup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 500px; margin: auto; }
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
     input, button { width: 100%; padding: 1rem; margin-top: 1rem; font-size: 1rem; }
-    pre { background: #f0f0f0; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; }
+    pre { background: #f4f4f4; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <h1>📱 Number Lookup</h1>
-  <input type="tel" id="phone" placeholder="+4712345678">
-  <button onclick="lookup()">Lookup</button>
+  <h1>📱 Combined Phone Lookup</h1>
+  <input id="phone" type="tel" placeholder="+4712345678" />
+  <button onclick="lookupNumber()">Lookup</button>
   <pre id="result">Result will appear here</pre>
 
   <script>
-    async function lookup() {
+    async function lookupNumber() {
       const number = document.getElementById('phone').value.trim();
       const result = document.getElementById('result');
       if (!number) {
@@ -25,18 +25,32 @@
         return;
       }
 
-      result.textContent = 'Looking up...';
+      result.textContent = '🔍 Looking up...';
+
+      const abstractKey = "8959a240bc3741be94728e6f30a01038";
+      const veriphoneKey = "4D7FB78BB56641B694AB2C666B285A12";
+
+      const results = {};
 
       try {
-        const apiKey = '8959a240bc3741be94728e6f30a01038'; // Replace with your actual key
-        const url = `https://phonevalidation.abstractapi.com/v1/?api_key=${apiKey}&phone=${encodeURIComponent(number)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        result.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        result.textContent = '❌ Error looking up number.';
+        // AbstractAPI
+        const abstractRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=${abstractKey}&phone=${encodeURIComponent(number)}`);
+        const abstractData = await abstractRes.json();
+        results["AbstractAPI"] = abstractData;
+      } catch (e) {
+        results["AbstractAPI"] = { error: "Failed to fetch" };
       }
+
+      try {
+        // Veriphone
+        const veriphoneRes = await fetch(`https://api.veriphone.io/v2/verify?phone=${encodeURIComponent(number)}&key=${veriphoneKey}`);
+        const veriphoneData = await veriphoneRes.json();
+        results["Veriphone"] = veriphoneData;
+      } catch (e) {
+        results["Veriphone"] = { error: "Failed to fetch" };
+      }
+
+      result.textContent = JSON.stringify(results, null, 2);
     }
   </script>
 </body>
