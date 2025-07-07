@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>📱 Combined Phone Lookup</title>
+  <title>📱 Multi-Source Phone Lookup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; padding: 1rem; }
     input, button { width: 100%; padding: 1rem; margin-top: 1rem; font-size: 1rem; }
     pre { background: #f4f4f4; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <h1>📱 Combined Phone Lookup</h1>
+  <h1>📱 Multi-Source Phone Lookup</h1>
   <input id="phone" type="tel" placeholder="+4712345678" />
+  <input id="numvalidateKey" placeholder="NumValidate API key (optional)" style="margin-top: 0.5rem;" />
   <button onclick="lookupNumber()">Lookup</button>
   <pre id="result">Result will appear here</pre>
 
@@ -20,6 +21,8 @@
     async function lookupNumber() {
       const number = document.getElementById('phone').value.trim();
       const result = document.getElementById('result');
+      const numvalidateKey = document.getElementById('numvalidateKey').value.trim();
+
       if (!number) {
         result.textContent = 'Please enter a number.';
         return;
@@ -27,27 +30,44 @@
 
       result.textContent = '🔍 Looking up...';
 
-      const abstractKey = "8959a240bc3741be94728e6f30a01038";
-      const veriphoneKey = "4D7FB78BB56641B694AB2C666B285A12";
-
       const results = {};
 
       try {
         // AbstractAPI
-        const abstractRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=${abstractKey}&phone=${encodeURIComponent(number)}`);
-        const abstractData = await abstractRes.json();
-        results["AbstractAPI"] = abstractData;
+        const abstractKey = "8959a240bc3741be94728e6f30a01038";
+        const absRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=${abstractKey}&phone=${encodeURIComponent(number)}`);
+        results["AbstractAPI"] = await absRes.json();
       } catch (e) {
-        results["AbstractAPI"] = { error: "Failed to fetch" };
+        results["AbstractAPI"] = { error: "❌ Failed" };
       }
 
       try {
         // Veriphone
-        const veriphoneRes = await fetch(`https://api.veriphone.io/v2/verify?phone=${encodeURIComponent(number)}&key=${veriphoneKey}`);
-        const veriphoneData = await veriphoneRes.json();
-        results["Veriphone"] = veriphoneData;
+        const veriphoneKey = "4D7FB78BB56641B694AB2C666B285A12";
+        const verRes = await fetch(`https://api.veriphone.io/v2/verify?phone=${encodeURIComponent(number)}&key=${veriphoneKey}`);
+        results["Veriphone"] = await verRes.json();
       } catch (e) {
-        results["Veriphone"] = { error: "Failed to fetch" };
+        results["Veriphone"] = { error: "❌ Failed" };
+      }
+
+      try {
+        // IPQS (no key for public lookup endpoint)
+        const ipqsRes = await fetch(`https://ipqualityscore.com/freephonevalidator?number=${encodeURIComponent(number)}`);
+        results["IPQS"] = await ipqsRes.json();
+      } catch (e) {
+        results["IPQS"] = { error: "❌ Failed" };
+      }
+
+      try {
+        // NumValidate (only if key is provided)
+        if (numvalidateKey) {
+          const nvRes = await fetch(`https://numvalidate.com/api/validate?number=${encodeURIComponent(number)}&apikey=${numvalidateKey}`);
+          results["NumValidate"] = await nvRes.json();
+        } else {
+          results["NumValidate"] = { skipped: "No API key entered" };
+        }
+      } catch (e) {
+        results["NumValidate"] = { error: "❌ Failed" };
       }
 
       result.textContent = JSON.stringify(results, null, 2);
