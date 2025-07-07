@@ -1,38 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Phone Number Lookup</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📱 Number Lookup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; padding: 1rem; }
-    input, button { padding: 1rem; width: 100%; margin-top: 1rem; font-size: 1rem; }
+    body { font-family: sans-serif; padding: 2rem; max-width: 500px; margin: auto; }
+    input, button { width: 100%; padding: 1rem; margin-top: 1rem; font-size: 1rem; }
     pre { background: #f0f0f0; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; }
   </style>
 </head>
 <body>
   <h1>📱 Number Lookup</h1>
-  <input type="tel" id="phoneInput" placeholder="+4712345678">
-  <button onclick="lookupNumber()">Lookup</button>
-  <pre id="resultBox">Result will appear here</pre>
+  <input type="tel" id="phone" placeholder="+4712345678">
+  <button onclick="lookup()">Lookup</button>
+  <pre id="result">Result will appear here</pre>
 
   <script>
-    async function lookupNumber() {
-      const number = document.getElementById('phoneInput').value.trim();
-      const resultBox = document.getElementById('resultBox');
+    async function lookup() {
+      const number = document.getElementById('phone').value.trim();
+      const result = document.getElementById('result');
       if (!number) {
-        resultBox.textContent = 'Please enter a number.';
+        result.textContent = 'Please enter a number.';
         return;
       }
 
-      resultBox.textContent = 'Looking up...';
+      result.textContent = 'Looking up...';
 
       try {
-        const res = await fetch(`/api-lookup.js?number=${encodeURIComponent(number)}`);
+        const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual key
+        const url = `https://phonevalidation.abstractapi.com/v1/?api_key=${apiKey}&phone=${encodeURIComponent(number)}`;
+        const res = await fetch(url);
         const data = await res.json();
-        resultBox.textContent = JSON.stringify(data, null, 2);
+
+        result.textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        resultBox.textContent = 'Error looking up number.';
+        result.textContent = '❌ Error looking up number.';
       }
     }
   </script>
