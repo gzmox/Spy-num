@@ -28,7 +28,7 @@
       result.textContent = 'Looking up...';
 
       try {
-        const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual key
+        const apiKey = '8959a240bc3741be94728e6f30a01038'; // Replace with your actual key
         const url = `https://phonevalidation.abstractapi.com/v1/?api_key=${apiKey}&phone=${encodeURIComponent(number)}`;
         const res = await fetch(url);
         const data = await res.json();
